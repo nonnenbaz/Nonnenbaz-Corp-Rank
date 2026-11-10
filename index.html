@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nonnenbaz Corp Rank</title>
+<style>
+:root{--bg:#0a0d16;--panel:#121827;--panel2:#182235;--text:#f4f6fb;--muted:#9ba8bd;--line:#27344a;--accent:#8b7cff;--accent2:#42d6bd;--gold:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% 0%,#20204a 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:30px 22px 60px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:26px}.brand{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:800}.pill{border:1px solid var(--line);border-radius:99px;padding:7px 12px;color:var(--muted);font-size:12px}
+h1{font-size:clamp(32px,5vw,54px);line-height:1.05;margin:12px 0}.sub{color:var(--muted);max-width:720px}.hero{padding:30px;border:1px solid #34345c;border-radius:24px;background:linear-gradient(120deg,rgba(139,124,255,.19),rgba(66,214,189,.07));margin-bottom:24px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}.tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:10px 15px;border-radius:12px;cursor:pointer;font-weight:700}.tab.active{background:var(--accent);color:white;border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:18px 0 26px}.stat,.panel{background:rgba(18,24,39,.94);border:1px solid var(--line);border-radius:18px;padding:18px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:28px;margin-top:4px}
+.panel{margin:14px 0}.panel h2{margin:0 0 14px;font-size:20px}.panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+input,select{background:#0c1220;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px 12px;font:inherit}
+input{min-width:220px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:550px}th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line)}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}td.num{text-align:right;font-variant-numeric:tabular-nums}.rank{color:var(--muted);width:45px}.name{font-weight:700}.pts{font-weight:800;color:var(--accent2)}
+.medal{font-size:18px;margin-right:6px}.bar{height:7px;background:#27344a;border-radius:10px;overflow:hidden;margin-top:6px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:10px}
+#chart{width:100%;height:460px;display:block;background:#0c1220;border-radius:12px;border:1px solid var(--line)}.chart-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 14px}.mode-switch{display:inline-flex;gap:4px;padding:4px;background:#0a101d;border:1px solid #2b3850;border-radius:13px}.mode-switch button{border:0;background:transparent;color:#aab6ca;padding:9px 13px;border-radius:9px;font:600 13px system-ui;cursor:pointer;transition:background .18s,color .18s,box-shadow .18s}.mode-switch button:hover{color:#fff;background:#202b40}.mode-switch button.active{background:linear-gradient(135deg,#8172f6,#6557d8);color:#fff;box-shadow:0 3px 12px rgba(111,96,230,.25)}.creator-picker{min-width:190px!important;max-width:240px;border-radius:11px!important}.chart-color-key{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 9px;color:#aebbd0;font-size:12px}.chart-color-key span{display:inline-flex;align-items:center;gap:6px}.chart-color-key i{width:10px;height:10px;border-radius:50%;display:inline-block}.chart-viewport{position:relative;overflow-x:auto;width:100%;border-radius:12px}.chart-tooltip{position:absolute;z-index:5;transform:translate(-50%,-115%);pointer-events:none;background:#f4f6fb;color:#111827;border:1px solid #fff;border-radius:9px;padding:7px 11px;font-size:12px;font-weight:750;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.35)}.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:10px}
+.rank-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.rank-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px}.rank-card b{font-size:20px;display:block}.rank-card span{color:var(--muted);font-size:12px}
+ol{margin:0;padding-left:22px}li{padding:5px 0;border-bottom:1px solid rgba(39,52,74,.55)}.muted{color:var(--muted)}.note{font-size:12px;color:var(--muted);margin-top:14px}.hidden{display:none}
+@media(max-width:700px){.wrap{padding:18px 13px 40px}.grid{grid-template-columns:1fr 1fr}.rank-cards{grid-template-columns:1fr}.hero{padding:22px}.top{align-items:flex-start;flex-direction:column}}
+
+.year-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+.search-select{min-width:220px;max-width:100%}
+.profile-grid,.record-grid,.loyalty-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:14px}
+.profile-card,.metric-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px}
+.profile-card{display:flex;gap:12px;align-items:center}
+.profile-card img,.profile-avatar{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#26354a;flex:none}
+.profile-card b{display:block}.profile-card small{color:var(--muted)}
+.profile-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+.small-btn{border:1px solid var(--line);background:#0c1220;color:var(--text);padding:7px 10px;border-radius:9px;cursor:pointer}
+.profile-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.profile-form label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:13px}
+.profile-form input{width:100%;min-width:0}
+.profile-form .wide{grid-column:1/-1}
+.profile-preview{display:flex;align-items:center;gap:12px}
+.compare-select{min-width:260px;min-height:110px}
+.metric-card strong{display:block;font-size:22px;color:var(--accent2);margin-top:5px}
+.timeline-item{padding:12px 14px;border-left:2px solid var(--accent2);margin:8px 0;background:var(--panel2);border-radius:0 12px 12px 0}
+.timeline-item b{display:block}
+#generalRows td{vertical-align:middle}
+@media(max-width:700px){
+ .profile-form{grid-template-columns:1fr}
+ .profile-form .wide{grid-column:auto}
+ .table-wrap{overflow:visible}
+ table{min-width:0}
+ table thead{display:none}
+ table tbody tr{display:grid;grid-template-columns:38px 1fr auto;gap:4px 8px;padding:10px 0;border-bottom:1px solid var(--line)}
+ table tbody td{border:0;padding:3px 2px}
+ table tbody td:nth-child(1){grid-row:1/3;align-self:center}
+ table tbody td:nth-child(2){grid-column:2;min-width:0;overflow-wrap:anywhere}
+ table tbody td:nth-child(3){grid-column:3;grid-row:1/3;align-self:center;text-align:right;white-space:nowrap;font-size:15px}
+ table tbody td:nth-child(4){grid-column:2;max-width:100%;padding-right:8px}
+}
+
+</style>
+</head>
+<body><main class="wrap">
+<div class="top"><div class="brand">Nonnenbaz Corp Rank</div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span id="cloudStatus" class="pill">☁️ Connexion en cours…</span><button class="tab" id="accountButton">🔐 Connexion administrateur</button><button class="tab hidden" id="logoutButton">Déconnexion</button></div></div>
+<section class="panel hidden" id="loginPanel"><h2>Connexion administrateur</h2><p class="muted">Réservé au compte administrateur du classement.</p><form id="loginForm" style="display:flex;gap:10px;flex-wrap:wrap"><input id="loginEmail" type="email" placeholder="Adresse e-mail" autocomplete="username" required><input id="loginPassword" type="password" placeholder="Mot de passe" autocomplete="current-password" required><button class="tab active" type="submit">Se connecter</button></form><p id="loginMessage" class="note" aria-live="polite"></p></section>
+<section class="hero">
+<h1>Qui domine le classement ?</h1>
+
+</section>
+<div class="grid">
+<div class="stat"><small>Créateurs recensés</small><strong id="totalCreators">53</strong></div>
+<div class="stat"><small>Éditions enregistrées</small><strong id="totalEditions">5</strong></div>
+<div class="stat"><small>Leader actuel</small><strong id="leader">—</strong></div>
+</div>
+<nav class="tabs">
+<button class="tab active" data-tab="general">🏆 Général</button>
+<button class="tab" data-tab="evolution">📈 Évolution</button>
+<button class="tab" data-tab="editions">📅 Éditions</button>
+<button class="tab hidden" id="manageTab" data-tab="manage">✏️ Mise à jour</button>
+</nav>
+<section id="general" class="view">
+<div class="panel">
+<div class="panel-head"><h2>Classement général</h2><input id="search" placeholder="Rechercher un YouTubeur…"></div>
+<div class="year-controls"><label for="generalPeriod" class="muted">Période du classement</label><select id="generalPeriod"><option value="all">Général — toutes les éditions</option></select></div>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>YouTubeur</th><th class="num">Points</th><th style="width:22%">Progression</th></tr></thead><tbody id="generalRows"></tbody></table></div>
+<p class="note">Calcul : à chaque édition, le 1er reçoit autant de points qu'il y a de participants, puis 1 point de moins par place. Les points de toutes les éditions sont additionnés. En cas d'égalité, priorité au meilleur rang du 1er classement.</p>
+</div>
+<div class="panel">
+<h2>Records historiques</h2>
+<div id="historicalRecords" class="record-grid"></div>
+</div>
+<div class="panel">
+<h2>Fidélité des YouTubeurs</h2>
+<div id="loyaltyStats" class="loyalty-grid"></div>
+</div>
+</section>
+<section id="evolution" class="view hidden">
+<div class="panel">
+<div class="panel-head"><h2>Courbe d'évolution</h2>
+<div class="panel-head">
+<label for="historyRange" class="muted">Période</label><select id="historyRange"><option value="all">Tous les classements</option><option value="12">Les 12 derniers classements</option></select>
+<span class="muted">Afficher</span><div class="mode-switch" role="group" aria-label="Mode d’affichage"><button type="button" data-mode="one" class="active">1 créateur</button><button type="button" data-mode="top10">Top 10</button><button type="button" data-mode="all">Tous</button><button type="button" data-mode="compare">Comparer</button></div><select id="displayMode" class="hidden" aria-hidden="true" tabindex="-1"><option value="one">1 YouTubeur</option><option value="top10">Les 10 premiers</option><option value="all">Tous les YouTubeurs</option><option value="compare">Comparer</option></select>
+<div id="singleCreatorBox"><input id="creatorSearch" class="search-select" placeholder="Rechercher un YouTubeur…"><select id="creatorSelect" class="creator-picker" aria-label="Choisir un YouTubeur"></select></div>
+<div id="compareCreatorBox" class="hidden"><label class="muted" for="compareSearch">Rechercher puis cocher 2 à 5 YouTubeurs</label><input id="compareSearch" class="search-select" placeholder="Rechercher un YouTubeur…"><div id="compareCreatorList" class="profile-grid"></div><p id="compareCount" class="muted">0 / 5 sélectionnés</p></div>
+</div></div>
+<p class="muted">Plus le rang est proche de 1, meilleur il est. Une absence signifie que le créateur n'était pas dans cette édition.</p>
+<div class="panel-head" style="margin:12px 0;gap:10px">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<span class="muted">🔎 Zoom</span>
+<button class="tab" type="button" id="zoomOut" aria-label="Dézoomer">−</button>
+<input id="chartZoom" type="range" min="1" max="4" step="0.25" value="1" style="min-width:130px;width:180px;padding:0;accent-color:var(--accent)">
+<button class="tab" type="button" id="zoomIn" aria-label="Zoomer">+</button>
+<button class="tab" type="button" id="zoomReset">Réinitialiser</button>
+<strong id="zoomValue" class="muted">1×</strong>
+</div></div>
+<div class="chart-color-key"><span><i style="background:#71D3BE"></i> Teintes turquoise attribuées aux YouTubeurs</span></div><div id="chartViewport" class="chart-viewport"><canvas id="chart" width="1000" height="460"></canvas><div id="chartTooltip" class="chart-tooltip hidden"></div></div>
+<div class="legend"><span>● Rang dans chaque édition</span><span>— Rang 1 en haut du graphique</span></div>
+<div id="curveSummary" class="note"></div>
+</div>
+</section>
+<section id="editions" class="view hidden">
+<div class="panel"><div class="panel-head"><h2>Consulter une édition</h2><select id="editionSelect"></select></div><div id="editionContent"></div></div>
+<div class="panel"><h2>Calendrier des éditions</h2><div id="editionTimeline"></div></div>
+<div class="panel"><h2>Comparer deux années</h2><div class="year-controls"><select id="compareYearA"></select><span class="muted">avec</span><select id="compareYearB"></select><button class="tab active" id="runYearCompare">Comparer</button></div><div id="yearCompareResult" class="record-grid"></div></div>
+</section>
+<section id="manage" class="view hidden">
+<div class="panel">
+<h2>Mettre à jour les classements</h2>
+<p class="muted">Colle les YouTubeurs dans l'ordre, avec un nom par ligne. Tu peux corriger une ancienne édition ou ajouter la suivante.</p>
+<div class="panel-head"><label for="editEdition">Édition à modifier</label><select id="editEdition"></select></div>
+<textarea id="rankingInput" rows="12" style="width:100%;margin:12px 0;background:#0c1220;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px;font:inherit" placeholder="Colle ici les pseudos, un par ligne"></textarea>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button class="tab active" id="saveEdition">💾 Enregistrer les modifications</button>
+<button class="tab" id="addEdition">＋ Ajouter une nouvelle édition</button><button class="tab" id="deleteEdition" style="border-color:#a94b61;color:#ff9aaa">🗑️ Supprimer cette édition</button>
+</div>
+<p class="note">Les changements sont enregistrés dans Supabase et deviennent accessibles depuis tes autres appareils. La sauvegarde nécessite une connexion administrateur et une connexion Internet.</p>
+</div>
+<div class="panel">
+<div class="panel-head"><h2>Gestion des YouTubeurs</h2><button class="tab active" id="createProfileBtn">＋ Créer une fiche</button></div>
+<p class="muted">Les fiches sont créées manuellement. Le pseudo sert d'identifiant unique pour relier les statistiques et l'historique. Une photo peut être importée depuis ton ordinateur ou ajoutée via une URL.</p>
+<div id="profileFormBox" class="hidden">
+<div class="profile-form">
+<label>Pseudo unique<input id="profilePseudo" placeholder="Ex. NomDeChaine"></label>
+<label>Lien de la chaîne YouTube<input id="profileUrl" type="url" placeholder="https://www.youtube.com/@..."></label>
+<label class="wide">Photo de profil (importer depuis ton ordinateur)<input id="profileFile" type="file" accept="image/*"></label>
+<label class="wide">Ou URL directe de l'image<input id="profileAvatarUrl" type="url" placeholder="https://..."></label>
+<div class="wide profile-preview"><img id="profilePreview" class="profile-avatar" alt="Aperçu de la photo" src="" /><span class="muted">Aperçu de la photo</span></div>
+<div class="wide" style="display:flex;gap:8px;flex-wrap:wrap"><button class="tab active" id="saveProfileBtn">Enregistrer la fiche</button><button class="tab" id="cancelProfileBtn">Annuler</button></div>
+</div></div>
+<div id="profilesList" class="profile-grid"></div>
+<p class="note">La récupération automatique de la photo depuis YouTube n'est pas activée dans cette version : l'import manuel et l'URL d'image fonctionnent sans API YouTube. La suppression d'une fiche ne supprime pas les classements historiques.</p>
+</div>
+</section>
+<section id="profileView" class="view hidden"><div class="panel"><div class="panel-head"><h2 id="profileViewTitle">Fiche YouTubeur</h2><button class="tab" id="backToGeneral">← Retour au classement</button></div><div id="profileDetails"></div></div></section>
+<p class="note">Chaque édition correspond à un mois, à partir de juin 2026. Les classements peuvent être corrigés ou complétés dans « Mise à jour ».</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://ascianeigncfivjqeikf.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_hEIbaHlMYKgGL36aK0G-OA_9GVMuUkU";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let rankings = [];
+let editionMonths = [];
+let currentUser = null; let cloudHasData = false; let cloudBusy = false;
+function allNames(){const a=[];rankings.forEach(r=>r.forEach(n=>{if(!a.includes(n))a.push(n)}));return a}
+function makeCumulative(){
+ const ns=allNames(), first=rankings[0]||[];
+ const score=n=>rankings.reduce((sum,r)=>sum+(r.includes(n)?r.length-r.indexOf(n):0),0);
+ return ns.map(n=>({name:n,points:score(n),positions:rankings.map(r=>r.includes(n)?r.indexOf(n)+1:null),first:first.includes(n)?first.indexOf(n)+1:999,seen:rankings.findIndex(r=>r.includes(n))}))
+ .sort((a,b)=>b.points-a.points||a.first-b.first||a.seen-b.seen);
+}
+let cumulative=makeCumulative();
+
+const $=id=>document.getElementById(id);
+
+let creatorProfiles = [];
+let editingProfileId = null;
+let selectedProfilePhoto = '';
+function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function periodKeys(){
+ const keys=new Set();
+ editionMonths.forEach(m=>{const [y,mo]=m.split('-').map(Number);const start=mo>=6?y:y-1;keys.add(start+'-'+(start+1));});
+ return [...keys].sort();
+}
+function indicesForPeriod(key){
+ if(key==='all')return rankings.map((_,i)=>i);
+ const [start]=key.split('-').map(Number);
+ return editionMonths.map((m,i)=>{const [y,mo]=m.split('-').map(Number);return ((mo>=6?y:y-1)===start)?i:-1;}).filter(i=>i>=0);
+}
+function cumulativeFor(indices){
+ const names=[...new Set(indices.flatMap(i=>rankings[i]||[]))],first=rankings[indices[0]]||[];
+ return names.map(name=>({name,points:indices.reduce((s,i)=>s+(rankings[i].includes(name)?rankings[i].length-rankings[i].indexOf(name):0),0),positions:indices.map(i=>rankings[i].includes(name)?rankings[i].indexOf(name)+1:null),first:first.includes(name)?first.indexOf(name)+1:999,seen:indices.findIndex(i=>rankings[i].includes(name))}))
+ .sort((a,b)=>b.points-a.points||a.first-b.first||a.seen-b.seen);
+}
+function fillPeriodControls(){
+ const keys=periodKeys(),sel=$('generalPeriod'),old=sel.value||'all';
+ sel.innerHTML='<option value="all">Général — toutes les éditions</option>'+keys.map(k=>`<option value="${k}">${k.replace('-','–')} (juin à mai)</option>`).join('');
+ sel.value=[...sel.options].some(o=>o.value===old)?old:'all';
+ ['compareYearA','compareYearB'].forEach(id=>{const s=$(id),prev=s.value;s.innerHTML=keys.map(k=>`<option value="${k}">${k.replace('-','–')}</option>`).join('');if([...s.options].some(o=>o.value===prev))s.value=prev;});
+}
+function drawGeneralForPeriod(filter=''){
+ const list=cumulativeFor(indicesForPeriod($('generalPeriod').value));
+ const max=list[0]?.points||1;
+ $('generalRows').innerHTML=list.filter(x=>x.name.toLowerCase().includes(filter.toLowerCase())).map(x=>{
+  const rank=list.indexOf(x)+1,width=Math.max(2,x.points/max*100);
+  return `<tr><td class="rank">${medal(rank)||rank}</td><td class="name"><button class="small-btn open-profile" data-name="${escapeHTML(x.name)}">${escapeHTML(x.name)}</button></td><td class="num pts">${x.points}</td><td><div class="bar"><span style="width:${width}%"></span></div></td></tr>`;
+ }).join('');
+}
+function cardMetric(label,value,detail=''){return `<div class="metric-card"><span class="muted">${label}</span><strong>${value}</strong><small class="muted">${detail}</small></div>`;}
+function drawHistorical(){
+ const names=allNames(),records=[];
+ let mostPoints={name:'—',points:0},bestRank={name:'—',rank:Infinity},worstRank={name:'—',rank:0},bigRise={name:'—',delta:0},bigFall={name:'—',delta:0};
+ names.forEach(n=>{
+  const pts=rankings.reduce((s,r)=>s+(r.includes(n)?r.length-r.indexOf(n):0),0);if(pts>mostPoints.points)mostPoints={name:n,points:pts};
+  const pos=rankings.map(r=>r.includes(n)?r.indexOf(n)+1:null).filter(Boolean);
+  if(pos.length&&Math.min(...pos)<bestRank.rank)bestRank={name:n,rank:Math.min(...pos)};
+  if(pos.length&&Math.max(...pos)>worstRank.rank)worstRank={name:n,rank:Math.max(...pos)};
+  for(let i=1;i<rankings.length;i++){const a=rankings[i-1].indexOf(n),b=rankings[i].indexOf(n);if(a>=0&&b>=0){const delta=a-b;if(delta>bigRise.delta)bigRise={name:n,delta};if(-delta>bigFall.delta)bigFall={name:n,delta:-delta};}}
+ });
+ let longestLeader={name:'—',count:0};const leaders=rankings.map(r=>r[0]);names.forEach(n=>{let run=0,best=0;leaders.forEach(v=>{run=v===n?run+1:0;best=Math.max(best,run)});if(best>longestLeader.count)longestLeader={name:n,count:best};});
+ $('historicalRecords').innerHTML=[
+ cardMetric('Plus de points cumulés',mostPoints.name,mostPoints.points+' points'),
+ cardMetric('Plus longue série à la 1re place',longestLeader.name,longestLeader.count+' édition(s) consécutive(s)'),
+ cardMetric('Meilleur rang atteint',bestRank.name,bestRank.rank===Infinity?'—':'#'+bestRank.rank),
+ cardMetric('Rang le plus bas atteint',worstRank.name,worstRank.rank?'#'+worstRank.rank:'—'),
+ cardMetric('Plus forte progression entre deux éditions',bigRise.name,bigRise.delta?bigRise.delta+' place(s) gagnée(s)':'Pas de donnée'),
+ cardMetric('Plus forte chute entre deux éditions',bigFall.name,bigFall.delta?bigFall.delta+' place(s) perdue(s)':'Pas de donnée')
+ ].join('');
+ const first=rankings[0]||[],top10Count={};names.forEach(n=>top10Count[n]=rankings.filter(r=>r.indexOf(n)>=0&&r.indexOf(n)<10).length);
+ const longest=names.map(n=>{let run=0,best=0;rankings.forEach(r=>{run=r.includes(n)?run+1:0;best=Math.max(best,run)});return {n,best}}).sort((a,b)=>b.best-a.best)[0];
+ const loyalTop=Object.entries(top10Count).sort((a,b)=>b[1]-a[1])[0];
+ const avg=(rankings.reduce((s,r)=>s+r.length,0)/Math.max(1,names.length)).toFixed(1);
+ $('loyaltyStats').innerHTML=[
+ cardMetric('Présents depuis la première édition',first.length, 'créateurs dans la toute première édition'),
+ cardMetric('Plus longtemps dans le Top 10',loyalTop?.[0]||'—',(loyalTop?.[1]||0)+' édition(s)'),
+ cardMetric('Plus longue présence consécutive',longest?.n||'—',(longest?.best||0)+' édition(s)'),
+ cardMetric('Moyenne d’éditions par créateur',avg,'présences moyennes')
+ ].join('');
+}
+function renderProfiles(){
+ const box=$('profilesList');if(!box)return;
+ const sorted=[...creatorProfiles].sort((a,b)=>a.pseudo.localeCompare(b.pseudo,'fr'));
+ box.innerHTML=sorted.length?sorted.map(p=>`<div class="profile-card"><img src="${escapeHTML(p.avatar||'')}" onerror="this.style.visibility='hidden'" alt=""><div><b>${escapeHTML(p.pseudo)}</b><small>${escapeHTML(p.url||'Aucun lien YouTube')}</small></div><div class="profile-actions"><button class="small-btn" data-edit-profile="${escapeHTML(p.id)}">Modifier</button><button class="small-btn" data-delete-profile="${escapeHTML(p.id)}">Supprimer</button></div></div>`).join(''):'<p class="muted">Aucune fiche créée pour le moment.</p>';
+}
+function showProfile(name){
+ const p=creatorProfiles.find(x=>x.pseudo.toLowerCase()===name.toLowerCase());
+ const data=cumulative.find(x=>x.name.toLowerCase()===name.toLowerCase());
+ if(!p){alert('Aucune fiche créée pour '+name+'.');return;}
+ $('profileViewTitle').textContent=p.pseudo;
+ const positions=rankings.map((r,i)=>({month:editionLabel(i),rank:r.indexOf(p.pseudo)>=0?r.indexOf(p.pseudo)+1:null,points:r.includes(p.pseudo)?r.length-r.indexOf(p.pseudo):0})).filter(x=>x.rank);
+ $('profileDetails').innerHTML=`<div class="profile-card"><img class="profile-avatar" src="${escapeHTML(p.avatar||'')}" alt=""><div><b>${escapeHTML(p.pseudo)}</b><small>${escapeHTML(p.url||'')}</small></div></div><div class="record-grid">${cardMetric('Points cumulés',data?.points??0,'toutes éditions')}${cardMetric('Meilleur rang',positions.length?'#'+Math.min(...positions.map(x=>x.rank)):'—','historique')}${cardMetric('Présences',positions.length,rankings.length+' éditions possibles')}</div><h3>Historique</h3><ol>${positions.map(x=>`<li>${escapeHTML(x.month)} — rang #${x.rank}, ${x.points} points</li>`).join('')}</ol>${p.url?`<p><a href="${escapeHTML(p.url)}" target="_blank" rel="noopener">Voir la chaîne YouTube ↗</a></p>`:''}`;
+ document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));$('profileView').classList.remove('hidden');
+}
+function resetProfileForm(){selectedProfilePhoto='';editingProfileId=null;$('profilePseudo').value='';$('profileUrl').value='';$('profileAvatarUrl').value='';$('profileFile').value='';$('profilePreview').src='';$('profileFormBox').classList.add('hidden');}
+function openProfileForm(p=null){editingProfileId=p?.id||null;$('profilePseudo').value=p?.pseudo||'';$('profileUrl').value=p?.url||'';$('profileAvatarUrl').value=p?.avatar||'';$('profileFile').value='';$('profilePreview').src=p?.avatar||'';$('profileFormBox').classList.remove('hidden');}
+$('generalPeriod').addEventListener('change',()=>drawGeneralForPeriod($('search').value));
+$('generalRows').addEventListener('click',e=>{const b=e.target.closest('.open-profile');if(b)showProfile(b.dataset.name);});
+$('backToGeneral').addEventListener('click',()=>{ $('profileView').classList.add('hidden');$('general').classList.remove('hidden');});
+$('createProfileBtn').addEventListener('click',()=>openProfileForm());
+$('cancelProfileBtn').addEventListener('click',resetProfileForm);
+$('profileAvatarUrl').addEventListener('input',e=>{$('profilePreview').src=e.target.value;});
+$('profileFile').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/')){alert('Choisis un fichier image.');return;}if(f.size>2*1024*1024){alert('Image trop lourde : maximum 2 Mo.');e.target.value='';return;}const reader=new FileReader();reader.onload=()=>{$('profilePreview').src=reader.result;selectedProfilePhoto=reader.result;};reader.readAsDataURL(f);});
+$('saveProfileBtn').addEventListener('click',async()=>{
+ const pseudo=$('profilePseudo').value.trim(),url=$('profileUrl').value.trim();
+ if(!pseudo){alert('Le pseudo est obligatoire.');return;}
+ if(!/^(https?:\/\/)/i.test(url)&&url){alert('Le lien YouTube doit commencer par http:// ou https://');return;}
+ const collision=creatorProfiles.find(p=>p.pseudo.toLowerCase()===pseudo.toLowerCase()&&p.id!==editingProfileId);if(collision){alert('Ce pseudo existe déjà.');return;}
+ const old=creatorProfiles.find(p=>p.id===editingProfileId);
+ const avatar=selectedProfilePhoto||$('profileAvatarUrl').value.trim()||old?.avatar||'';
+ const next={id:editingProfileId||('p_'+Date.now()),pseudo,url,avatar};
+ if(old){if(old.pseudo!==pseudo){rankings=rankings.map(r=>r.map(n=>n===old.pseudo?pseudo:n));}creatorProfiles=creatorProfiles.map(p=>p.id===old.id?next:p);}else creatorProfiles.push(next);
+ selectedProfilePhoto='';resetProfileForm();renderProfiles();try{await saveCloud();alert('Fiche enregistrée.');}catch(err){alert('Fiche modifiée dans cette page, mais sauvegarde Supabase impossible : '+err.message);}
+});
+$('profilesList').addEventListener('click',async e=>{
+ const edit=e.target.closest('[data-edit-profile]'),del=e.target.closest('[data-delete-profile]');
+ if(edit){const p=creatorProfiles.find(x=>x.id===edit.dataset.editProfile);if(p)openProfileForm(p);}
+ if(del){const p=creatorProfiles.find(x=>x.id===del.dataset.deleteProfile);if(!p)return;if(!confirm('Supprimer la fiche de '+p.pseudo+' ? Les classements historiques et les points seront conservés.'))return;creatorProfiles=creatorProfiles.filter(x=>x.id!==p.id);renderProfiles();try{await saveCloud();}catch(err){alert('Suppression locale effectuée, mais sauvegarde Supabase impossible : '+err.message);}}
+});
+function renderTimeline(){
+ $('editionTimeline').innerHTML=rankings.map((r,i)=>`<div class="timeline-item"><b>${escapeHTML(editionLabel(i))}</b><span class="muted">${r.length} créateurs</span> · <button class="small-btn" data-open-edition="${i}">Consulter cette édition</button></div>`).join('');
+}
+$('editionTimeline').addEventListener('click',e=>{const b=e.target.closest('[data-open-edition]');if(b){$('editionSelect').value=b.dataset.openEdition;drawEdition();}});
+$('runYearCompare').addEventListener('click',()=>{
+ const a=$('compareYearA').value,b=$('compareYearB').value;if(!a||!b||a===b){$('yearCompareResult').innerHTML='<p class="muted">Choisis deux années différentes.</p>';return;}
+ const A=cumulativeFor(indicesForPeriod(a)),B=cumulativeFor(indicesForPeriod(b)),mapA=new Map(A.map((x,i)=>[x.name,{...x,rank:i+1}])),mapB=new Map(B.map((x,i)=>[x.name,{...x,rank:i+1}]));
+ const common=[...new Set([...mapA.keys(),...mapB.keys()])].map(n=>({name:n,a:mapA.get(n),b:mapB.get(n),delta:(mapA.get(n)?.points||0)-(mapB.get(n)?.points||0)})).sort((x,y)=>Math.abs(y.delta)-Math.abs(x.delta)).slice(0,10);
+ $('yearCompareResult').innerHTML=common.map(x=>cardMetric(x.name,(x.delta>0?'+':'')+x.delta+' points',`${a}: ${x.a?.points||0} pts · ${b}: ${x.b?.points||0} pts`)).join('');
+});
+
+const medal=n=>n===1?'👑':n===2?'🥈':n===3?'🥉':'';
+$('totalCreators').textContent=allNames().length;
+$('totalEditions').textContent=rankings.length;
+$('leader').textContent=cumulative[0]?.name||'—';
+function drawGeneral(filter=''){
+ const rows=cumulative.filter(x=>x.name.toLowerCase().includes(filter.toLowerCase()));
+ $('generalRows').innerHTML=rows.map(x=>{
+  const rank=cumulative.indexOf(x)+1, width=Math.max(2,x.points/(cumulative[0]?.points||1)*100);
+  return `<tr><td class="rank">${medal(rank)||rank}</td><td class="name">${x.name}</td><td class="num pts">${x.points}</td><td><div class="bar"><span style="width:${width}%"></span></div></td></tr>`;
+ }).join('');
+}
+drawGeneral();
+$('search').addEventListener('input',e=>{if($('generalPeriod'))drawGeneralForPeriod(e.target.value);else drawGeneral(e.target.value);});
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b===btn));
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('hidden',v.id!==btn.dataset.tab));
+ if(btn.dataset.tab==='evolution') drawChart();
+ if(btn.dataset.tab==='editions') drawEdition();
+}));
+const select=$('creatorSelect');
+allNames().slice().sort().forEach(n=>{let o=document.createElement('option');o.value=n;o.textContent=n;select.appendChild(o)});
+select.value=allNames()[0]||'';select.addEventListener('change',drawChart);$('historyRange').addEventListener('change',drawChart);$('displayMode').addEventListener('change',drawChart);
+let chartZoom=1;
+function setChartZoom(value){chartZoom=Math.min(4,Math.max(1,Number(value)||1));$('chartZoom').value=chartZoom;$('zoomValue').textContent=chartZoom.toLocaleString('fr-FR',{maximumFractionDigits:2})+'×';drawChart()}
+$('chartZoom').addEventListener('input',e=>setChartZoom(e.target.value));
+$('zoomIn').addEventListener('click',()=>setChartZoom(chartZoom+0.25));
+$('zoomOut').addEventListener('click',()=>setChartZoom(chartZoom-0.25));
+$('zoomReset').addEventListener('click',()=>setChartZoom(1));
+function editionLabel(index){
+ if(!editionMonths[index])return 'Édition';
+ const [yy,mm]=editionMonths[index].split('-').map(Number);const date=new Date(yy,mm-1,1);
+ return date.toLocaleDateString('fr-FR',{month:'long',year:'numeric'}).replace(/^./,c=>c.toUpperCase());
+}
+function drawChart(){
+  const c=$('chart'),ctx=c.getContext('2d'),dpr=window.devicePixelRatio||1,h=460;
+  const range=$('historyRange').value;
+  if(!rankings.length){c.width=Math.max(320,$('chartViewport').clientWidth||1000);c.height=460;c.style.width='100%';c.style.height='460px';ctx.clearRect(0,0,c.width,c.height);$('curveSummary').textContent='Aucune donnée chargée. Les courbes apparaîtront après le chargement des classements depuis Supabase.';return;}
+  // Au niveau de dézoom minimal, on limite la vue aux 12 dernières éditions.
+  // Dès qu'on zoome, on conserve tous les classements disponibles pour ne perdre aucun point.
+  const requestedCount=range==='12'?Math.min(12,rankings.length):rankings.length;
+  const visibleCount=(range==='12'||chartZoom===1)?Math.min(12,requestedCount):requestedCount;
+  const startIndex=Math.max(0,rankings.length-visibleCount);
+  const visibleRankings=rankings.slice(startIndex,startIndex+visibleCount);
+  const visibleLabels=visibleRankings.map((_,i)=>editionLabel(startIndex+i));
+  const viewportWidth=Math.max(320,$('chartViewport').clientWidth||1000);
+  const baseSpacing=(viewportWidth-86)/Math.max(1,Math.min(12,visibleCount)-1);
+  const w=Math.max(320,Math.round(86+baseSpacing*(visibleCount-1)*chartZoom));
+  c.style.width=w+'px';c.style.height=h+'px';c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  const pad={l:58,r:28,t:28,b:105},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  ctx.clearRect(0,0,w,h);ctx.font='14px system-ui';ctx.strokeStyle='#27344a';ctx.fillStyle='#b8c3d6';ctx.lineWidth=1;
+  const maxRank=Math.max(...visibleRankings.map(r=>r.length),2);
+  const ticks=[1,5,10,15,20,25,30,35,40,45,50,60,70,80,90,100].filter(r=>r<=maxRank);
+  if(!ticks.includes(maxRank))ticks.push(maxRank);
+  ticks.forEach(r=>{let y=pad.t+(r-1)/(maxRank-1)*ch;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText('#'+r,12,y+5)});
+  visibleLabels.forEach((label,i)=>{
+    const x=pad.l+i/(Math.max(1,visibleRankings.length-1))*cw;
+    ctx.save();ctx.translate(x,h-22);ctx.rotate(-.28);ctx.textAlign='right';ctx.fillStyle='#f4f6fb';ctx.font='bold 14px system-ui';ctx.fillText(label,0,0);ctx.restore();
+  });
+  const mode=$('displayMode').value; 
+  $('singleCreatorBox').classList.toggle('hidden',mode!=='one');
+  $('compareCreatorBox').classList.toggle('hidden',mode!=='compare');
+  const compared=[...document.querySelectorAll('#compareCreatorList input[type=checkbox]:checked')].map(o=>o.value).slice(0,5);
+  const chosen=mode==='one'?[select.value]:mode==='compare'?compared:mode==='top10'?cumulative.slice(0,10).map(x=>x.name):allNames();
+  window.chartHitPoints=[];
+  const palette=chosen.map((_,i)=>{const count=Math.max(1,chosen.length);const lightness=count===1?70:48+(i%7)*5;const saturation=48+(i%3)*8;return `hsl(165 ${saturation}% ${lightness}%)`;});
+  const pointToSegment=(px,py,a,b)=>{
+    const dx=b.x-a.x,dy=b.y-a.y,len=dx*dx+dy*dy;
+    const t=len?Math.max(0,Math.min(1,((px-a.x)*dx+(py-a.y)*dy)/len)):0;
+    const x=a.x+t*dx,y=a.y+t*dy;
+    return {distance:Math.hypot(px-x,py-y),x,y,t};
+  };
+  chosen.forEach((n,k)=>{
+    const vals=visibleRankings.map(r=>r.includes(n)?r.indexOf(n)+1:null);
+    const points=vals.map((v,i)=>v===null?null:{
+      x:pad.l+i/(Math.max(1,visibleRankings.length-1))*cw,
+      y:pad.t+(v-1)/(maxRank-1)*ch,
+      name:n,rank:v,edition:visibleLabels[i],index:i
+    });
+    const lineWidth=mode==='all'?1.9:mode==='top10'?3:4.2;
+    ctx.lineWidth=lineWidth;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.globalAlpha=mode==='all'?.78:1;
+    // Chaque tronçon prend une couleur selon le sens de l'évolution :
+    // rang qui baisse numériquement = progression (vert), rang qui augmente = recul (rouge).
+    for(let i=1;i<points.length;i++){
+      const a=points[i-1],b=points[i];
+      if(!a||!b)continue;
+      ctx.strokeStyle=palette[k%palette.length];
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      window.chartHitPoints.push({a,b,name:n,edition:b.edition,rank:b.rank,previousRank:a.rank});
+    }
+    points.forEach(p=>{
+      if(!p)return;
+      ctx.fillStyle=palette[k%palette.length];
+      if(mode!=='all'||chosen.length<25){
+        ctx.beginPath();ctx.arc(p.x,p.y,mode==='one'?7:mode==='top10'?4.2:2.8,0,Math.PI*2);ctx.fill();
+      }
+      if(mode==='one'){ctx.fillStyle='#f4f6fb';ctx.font='bold 14px system-ui';ctx.fillText('#'+p.rank,p.x-12,p.y-16)}
+    });
+    ctx.globalAlpha=1;
+  });
+  const rangeText=visibleCount+' classement'+(visibleCount>1?'s':'')+' affiché'+(visibleCount>1?'s':'')+(visibleCount<rankings.length?' — zoome pour retrouver tous les points':'');
+  const modeText=mode==='one'?select.value:mode==='top10'?'les 10 premiers':mode==='compare'?'la comparaison sélectionnée':'tous les YouTubeurs';
+  $('curveSummary').textContent='Affichage de '+modeText+' sur '+rangeText+'. Survole une courbe pour afficher le YouTubeur, l’édition et le rang.';
+  select.disabled=mode!=='one';
+}
+const ed=$('editionSelect');function fillEditionSelects(){ed.innerHTML='';rankings.forEach((r,i)=>{let o=document.createElement('option');o.value=i;o.textContent=editionLabel(i)+' ('+r.length+' créateurs)';ed.appendChild(o)});const me=$('editEdition');me.innerHTML='';rankings.forEach((r,i)=>{let o=document.createElement('option');o.value=i;o.textContent=editionLabel(i)+' ('+r.length+' créateurs)';me.appendChild(o)});$('totalEditions').textContent=rankings.length;$('totalCreators').textContent=allNames().length}fillEditionSelects();
+fillPeriodControls();drawHistorical();renderTimeline();renderProfiles();
+ed.addEventListener('change',drawEdition);
+function drawEdition(){
+ const i=Number(ed.value||0),r=rankings[i];
+ if(!r){$('editionContent').innerHTML='<p class="muted">Aucune édition enregistrée pour le moment. Les données seront affichées après leur chargement depuis Supabase.</p>';return;}
+ $('editionContent').innerHTML='<h3>'+editionLabel(i)+'</h3><ol>'+r.map((n,j)=>`<li><b>${n}</b> <span class="muted">— ${r.length-j} point${r.length-j>1?'s':''}</span></li>`).join('')+'</ol>';
+}
+drawEdition();
+function refreshSite(){
+ cumulative=makeCumulative();
+ fillPeriodControls();
+ drawHistorical();
+ renderTimeline();
+ renderProfiles();
+ renderCompareCreatorList();
+ const previousCreator=$('creatorSelect').value; $('creatorSelect').innerHTML=''; allNames().slice().sort().forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;$('creatorSelect').appendChild(o)}); $('creatorSelect').value=allNames().includes(previousCreator)?previousCreator:(cumulative[0]?.name||'');$('leader').textContent=cumulative[0]?.name||'—';drawGeneral($('search').value);
+ fillEditionSelects();drawEdition();drawGeneralForPeriod($('search').value);drawHistorical();renderTimeline();renderProfiles();drawChart();
+}
+const editSel=$('editEdition'),input=$('rankingInput');
+function loadEditText(){const i=Number(editSel.value||0);input.value=(rankings[i]||[]).join('\n')}
+editSel.addEventListener('change',loadEditText);loadEditText();
+function parseRanking(){return input.value.split(/\n|,/).map(x=>x.trim()).filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i)}
+async function saveCloud(){
+ if(!currentUser)throw new Error('Connecte-toi avec le compte administrateur pour enregistrer.');
+ const payload={id:1,owner_id:currentUser.id,rankings:rankings,edition_months:editionMonths,creator_profiles:creatorProfiles,updated_at:new Date().toISOString()};
+ const {error}=await supabaseClient.from('site_rankings').upsert(payload,{onConflict:'id'});if(error)throw error;cloudHasData=true;
+ $('cloudStatus').textContent='☁️ Synchronisé';
+}
+function setAdminUI(user){currentUser=user;$('manageTab').classList.toggle('hidden',!user);$('accountButton').classList.toggle('hidden',!!user);$('logoutButton').classList.toggle('hidden',!user);if(!user&&$('manage').classList.contains('hidden')===false){document.querySelector('[data-tab="general"]').click()} }
+async function loadCloud(){
+ $('cloudStatus').textContent='☁️ Chargement…';
+ const {data,error}=await supabaseClient.from('site_rankings').select('rankings,edition_months,creator_profiles').eq('id',1).maybeSingle();
+ if(error){$('cloudStatus').textContent='⚠️ Base à configurer';console.warn(error);return}
+ if(data&&Array.isArray(data.rankings)){rankings=data.rankings;creatorProfiles=Array.isArray(data.creator_profiles)?data.creator_profiles:[];editionMonths=Array.isArray(data.edition_months)&&data.edition_months.length===rankings.length?data.edition_months:rankings.map((_,i)=>{const d=new Date(2026,5+i,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')});cloudHasData=true;refreshSite();$('cloudStatus').textContent='☁️ Données en ligne';}
+ else {$('cloudStatus').textContent='☁️ En attente de la première sauvegarde';rankings=[];editionMonths=[];creatorProfiles=[];refreshSite();}
+}
+$('accountButton').addEventListener('click',()=> $('loginPanel').classList.toggle('hidden'));
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginMessage').textContent='Connexion…';const {data,error}=await supabaseClient.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){$('loginMessage').textContent='Connexion impossible : '+error.message;return}setAdminUI(data.user);$('loginPanel').classList.add('hidden');$('loginMessage').textContent='Connecté.';if(!cloudHasData){try{await saveCloud()}catch(err){$('cloudStatus').textContent='⚠️ '+err.message}}else await loadCloud();});
+$('logoutButton').addEventListener('click',async()=>{await supabaseClient.auth.signOut();setAdminUI(null);$('cloudStatus').textContent='☁️ Consultation publique'});
+supabaseClient.auth.getSession().then(async({data})=>{setAdminUI(data.session?.user||null);await loadCloud();if(data.session?.user&&!cloudHasData){try{await saveCloud()}catch(e){console.warn(e)}}});
+supabaseClient.auth.onAuthStateChange((_event,session)=>setAdminUI(session?.user||null));
+$('saveEdition').addEventListener('click',async()=>{const list=parseRanking();if(!list.length){alert('Ajoute au moins un nom avant d’enregistrer.');return}if(!currentUser){alert('Connecte-toi avec le compte administrateur.');return}rankings[Number(editSel.value)]=list;refreshSite();try{await saveCloud();alert('Édition enregistrée en ligne.')}catch(e){alert('Erreur de sauvegarde : '+e.message)}});
+$('addEdition').addEventListener('click',async()=>{const list=parseRanking();if(!list.length){alert('Colle d’abord la liste du nouveau classement.');return}if(!currentUser){alert('Connecte-toi avec le compte administrateur.');return}const last=editionMonths.length?editionMonths[editionMonths.length-1]:(()=>{const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')})() ;const [y,m]=last.split('-').map(Number);const d=new Date(y,m,1);editionMonths.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));rankings.push(list);refreshSite();editSel.value=String(rankings.length-1);loadEditText();try{await saveCloud();alert('Nouvelle édition ajoutée et sauvegardée en ligne.')}catch(e){alert('Erreur de sauvegarde : '+e.message)}});
+$('deleteEdition').addEventListener('click',async()=>{if(!currentUser){alert('Connecte-toi avec le compte administrateur.');return}if(rankings.length<=1){alert('Impossible de supprimer la dernière édition.');return}const i=Number(editSel.value||0);if(!confirm('Supprimer définitivement l’édition '+editionLabel(i)+' ? Les points et graphiques seront recalculés.'))return;rankings.splice(i,1);editionMonths.splice(i,1);refreshSite();editSel.value=String(Math.min(i,rankings.length-1));loadEditText();try{await saveCloud();alert('Édition supprimée et changement enregistré en ligne.')}catch(e){alert('Erreur de sauvegarde : '+e.message)}});
+$('chart').addEventListener('mousemove',e=>{
+ const canvas=$('chart'),viewport=$('chartViewport'),rect=canvas.getBoundingClientRect(),host=viewport.getBoundingClientRect();
+ const x=(e.clientX-rect.left)*(canvas.width/(window.devicePixelRatio||1))/rect.width;
+ const y=(e.clientY-rect.top)*(canvas.height/(window.devicePixelRatio||1))/rect.height;
+ let best=null,dist=Infinity;
+ (window.chartHitPoints||[]).forEach(segment=>{
+   const dx=segment.b.x-segment.a.x,dy=segment.b.y-segment.a.y,len=dx*dx+dy*dy;
+   const t=len?Math.max(0,Math.min(1,((x-segment.a.x)*dx+(y-segment.a.y)*dy)/len)):0;
+   const px=segment.a.x+t*dx,py=segment.a.y+t*dy,d=Math.hypot(px-x,py-y);
+   if(d<dist){dist=d;best={...segment,x:px,y:py,t};}
+ });
+ const tip=$('chartTooltip');
+ // Tolérance assez large : le survol fonctionne sur toute la ligne, pas uniquement sur les points.
+ if(best&&dist<13){
+   const rank=Math.round(best.a.rank+(best.b.rank-best.a.rank)*best.t);
+   tip.textContent=best.name+' · '+best.edition+' · rang #'+rank;
+   tip.style.left=(best.x+host.left-rect.left)+'px';
+   tip.style.top=(best.y+host.top-rect.top)+'px';
+   tip.classList.remove('hidden');
+ }else tip.classList.add('hidden');
+});
+$('chart').addEventListener('mouseleave',()=> $('chartTooltip').classList.add('hidden'));
+$('creatorSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();[...select.options].forEach(o=>o.hidden=!o.textContent.toLowerCase().includes(q));});
+function renderCompareCreatorList(){
+ const box=$('compareCreatorList');if(!box)return;
+ const selected=new Set([...box.querySelectorAll('input:checked')].map(x=>x.value));
+ const q=($('compareSearch')?.value||'').toLowerCase();
+ box.innerHTML=allNames().slice().sort((a,b)=>a.localeCompare(b,'fr')).filter(n=>n.toLowerCase().includes(q)).map(n=>`<label class="profile-card" style="cursor:pointer"><input type="checkbox" value="${escapeHTML(n)}" ${selected.has(n)?'checked':''}><span>${escapeHTML(n)}</span></label>`).join('');
+ $('compareCount').textContent=selected.size+' / 5 sélectionnés';
+}
+$('compareSearch').addEventListener('input',renderCompareCreatorList);
+$('compareCreatorList').addEventListener('change',e=>{
+ if(e.target.matches('input[type=checkbox]')){
+  const checked=[...$('compareCreatorList').querySelectorAll('input:checked')];
+  if(checked.length>5){e.target.checked=false;alert('Tu peux comparer 5 YouTubeurs maximum.');}
+  $('compareCount').textContent=$('compareCreatorList').querySelectorAll('input:checked').length+' / 5 sélectionnés';
+  drawChart();
+ }
+});
+document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+ $('displayMode').value=btn.dataset.mode;
+ document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+ $('displayMode').dispatchEvent(new Event('change'));
+}));
+window.addEventListener('resize',()=>{if(!$('evolution').classList.contains('hidden'))drawChart()});
+</script></body></html>
